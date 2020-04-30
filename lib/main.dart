@@ -1,62 +1,110 @@
 import 'package:flutter/material.dart';
-import 'package:my_samples/animated_grid_cell.dart';
+import 'package:my_samples/bloc/activator_bloc.dart';
+import 'package:provider/provider.dart';
+import 'services.dart';
+import 'grid_cell.dart';
+import 'album_model.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
-/// This Widget is the main application widget.
-class MyApp extends StatelessWidget {
-  static const String _title = 'Flutter Code Sample';
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int sindex = 0;
+  gridView(AsyncSnapshot<List<Album>> snapshot) {
+    return Padding(
+      child: GridView.count(
+        crossAxisCount: 3,
+        childAspectRatio: 1.0,
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 4.0,
+        children: snapshot.data.map((album) {
+          return GestureDetector(
+            // key: Key(album.id.toString()),
+            child: GridTile(
+              child: AlbumCell(album),
+            ),
+            onTap: () {
+              cellClick(album);
+            },
+          );
+        }).toList(),
+      ),
+      padding: EdgeInsets.all(10.0),
+    );
+  }
+
+  cellClick(Album album) {
+    print("Tapped ${album.title}");
+  }
+
+  circularProgress() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: _title,
-      home: Scaffold(
-        appBar: AppBar(title: const Text(_title)),
-        body: Container(
-          child: GridView.count(
-            primary: false,
-            padding: const EdgeInsets.all(20),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            crossAxisCount: 3,
-            children: <Widget>[
-              AnimatedGridCell('this is one'),
-              AnimatedGridCell('this is one'),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: const Text('He\'d have you all unravel at the'),
-                color: Colors.teal[100],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: const Text('Heed not the rabble'),
-                color: Colors.teal[200],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: const Text('Sound of screams but the'),
-                color: Colors.teal[300],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: const Text('Who scream'),
-                color: Colors.teal[400],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: const Text('Revolution is coming...'),
-                color: Colors.teal[500],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: const Text('Revolution, they...'),
-                color: Colors.teal[600],
-              ),
-            ],
+    final title = 'Grid List';
+
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ActivatorBloc>.value(
+        value: ActivatorBloc()
+        ),
+        ],
+        child: MaterialApp(
+          title: title,
+          home: Scaffold(
+            appBar: AppBar(
+              title: Text(title),
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Flexible(
+                    child: FutureBuilder<List<Album>>(
+                        future: Services.getPhotos(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Error ${snapshot.error}');
+                          }
+
+                          if (snapshot.hasData) {
+                            return gridView(snapshot);
+                          }
+                          return circularProgress();
+                        }))
+              ],
+            ),
+            // body: GridView.count(
+            //   // Create a grid with 2 columns. If you change the scrollDirection to
+            //   // horizontal, this produces 2 rows.
+            //   crossAxisCount: 3,
+            //   // Generate 100 widgets that display their index in the List.
+            //   children: List<Card>.generate(12, (index) {
+            //     return index % 2 == 0
+            //         ? Card(
+            //             child: FlatButton(
+            //               child: Text('Item $index'),
+            //               onPressed: null,
+
+            //             ),
+            //           )
+            //         : Card(
+            //             child: Image.network("http://tineye.com/images/widgets/mona.jpg"),
+            //           );
+            //   }),
+            // ),
           ),
         ),
-      ),
     );
   }
 }

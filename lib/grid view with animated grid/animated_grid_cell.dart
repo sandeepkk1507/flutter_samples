@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_samples/album_model.dart';
 
 class AnimatedGridCell extends StatelessWidget {
   final String text;
-  AnimatedGridCell(this.text);
+  final Album album;
+  AnimatedGridCell(this.album,this.text);
 
   final bool selected = false;
 
@@ -21,17 +23,14 @@ class AnimatedGridCell extends StatelessWidget {
           height: selected? 120.0 : 100.0,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25.0),
-            backgroundBlendMode: BlendMode.colorDodge,
+            // backgroundBlendMode: BlendMode.colorDodge,
             color: selected ? Colors.red : Colors.teal[400],
           ),
           alignment:
               selected ? Alignment.center : AlignmentDirectional.topCenter,
           duration: Duration(seconds: 2),
           curve: Curves.elasticInOut,
-          child: Column(children: <Widget>[
-            Text(text),
-            Text('Two')
-          ],),
+          child: Image.network(album.thumbnailUrl),
         ),
       ),
     );
