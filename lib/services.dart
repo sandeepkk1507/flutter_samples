@@ -10,6 +10,7 @@ class Services {
       final response = await http.get(url);
       if(response.statusCode == 200) {
         List<Album> list = parsePhotos(response.body);
+        updateUrl(list);
         return list;
       }else{
         throw Exception("Error");
@@ -22,4 +23,10 @@ class Services {
     final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
     return parsed.map<Album>((json) => Album.fromJson(json)).toList();
   }
+}
+ List<Album> updateUrl(List<Album> a) {
+  for (var i = 0; i < urlList.length; i++) {
+    a[i].thumbnailUrl = urlList[i];
+  }
+  return a;
 }

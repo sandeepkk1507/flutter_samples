@@ -15,6 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  
   int sindex = 0;
   gridView(AsyncSnapshot<List<Album>> snapshot) {
     return Padding(
@@ -24,15 +25,9 @@ class _MyAppState extends State<MyApp> {
         mainAxisSpacing: 4.0,
         crossAxisSpacing: 4.0,
         children: snapshot.data.map((album) {
-          return GestureDetector(
-            // key: Key(album.id.toString()),
-            child: GridTile(
-              child: AlbumCell(album),
-            ),
-            onTap: () {
-              cellClick(album);
-            },
-          );
+          return GridTile(
+              child: AlbumCell(album, sindex++),
+            );
         }).toList(),
       ),
       padding: EdgeInsets.all(10.0),
@@ -52,7 +47,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final title = 'Grid List';
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ActivatorBloc>.value(
@@ -62,13 +56,15 @@ class _MyAppState extends State<MyApp> {
         child: MaterialApp(
           title: title,
           home: Scaffold(
-            appBar: AppBar(
-              title: Text(title),
-            ),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Text('Puzzle game')
+                  ],
+                ),
                 Flexible(
                     child: FutureBuilder<List<Album>>(
                         future: Services.getPhotos(),

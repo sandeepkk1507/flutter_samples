@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import 'album_model.dart';
 
 class AlbumCell extends StatelessWidget {
-  const AlbumCell(this.album);
+  const AlbumCell(this.album, this.index);
   @required
   final Album album;
+  final int index;
   @override
   Widget build(BuildContext context) {
     final ActivatorBloc activatorBloc = Provider.of<ActivatorBloc>(context);
@@ -14,10 +15,11 @@ class AlbumCell extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      color: activatorBloc.activatorCode == 0 ? Colors.white : Colors.blue,
+      color: Colors.white,
       child: Padding(
         padding: EdgeInsets.all(10.0),
         child: Container(
+          // color: activatorBloc.cellStatus == 2 && this.index == index ? Colors.green : activatorBloc.cellStatus == 1 ? Colors.yellow : activatorBloc.cellStatus == 0 ? Colors.white : Colors.white,
           alignment: Alignment.center,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -26,18 +28,34 @@ class AlbumCell extends StatelessWidget {
             children: <Widget>[
               Flexible(
                 child: GestureDetector(
-                  child: ClipRRect(
-                    // key: Key(album.id.toString()),
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: "images/no_image.png",
-                      image: album.thumbnailUrl,
-                      width: 200,
-                      height: 200,
+                  child: Opacity(
+                    opacity: album.opacity == 1 ? 0.0 : 1.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        // borderRadius: BorderRadius.circular(30.0),
+                        border: Border.all(
+                            width: 4,
+                            color: album.gameValue == 2
+                                ? Colors.green
+                                : album.gameValue == 1
+                                    ? Colors.yellow
+                                    : Colors.white),
+                      ),
+                      child: ClipRRect(
+                        // key: Key(album.id.toString()),
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: FadeInImage.assetNetwork(
+                          placeholder: "images/no_image.png",
+                          image: album.thumbnailUrl,
+                          width: 200,
+                          height: 200,
+                        ),
+                      ),
                     ),
                   ),
                   onTap: () {
-
+                    activatorBloc.updateCode(album);
                   },
                 ),
               ),
